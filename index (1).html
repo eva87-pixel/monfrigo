@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Frigo - Précommandez votre déjeuner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-green: #2D5016;
+            --light-green: #8FB569;
+            --cream: #FFF8F0;
+            --warm-white: #FEFEFE;
+            --text-dark: #1A1A1A;
+            --text-medium: #4A4A4A;
+            --border-soft: #E8E4DE;
+            --shadow: rgba(45, 80, 22, 0.08);
+            --gradient-bg: linear-gradient(135deg, #FFF8F0 0%, #F5EFE6 100%);
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: var(--primary-green);
+            color: var(--warm-white);
+            padding: 4rem 2rem 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(143, 181, 105, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-bottom: 0.5rem;
+            font-weight: 400;
+        }
+
+        .freshness-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .freshness-badge::before {
+            content: '🌿';
+            font-size: 1.2rem;
+        }
+
+        /* Filter Section */
+        .filters {
+            background: var(--warm-white);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-soft);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .filter-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .filter-toggle {
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-toggle:hover {
+            background: var(--light-green);
+            transform: translateY(-1px);
+        }
+
+        .filter-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .filter-panel.active {
+            max-height: 600px;
+            margin-top: 1.5rem;
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-medium);
+            margin-bottom: 0.5rem;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            background: var(--cream);
+            border: 2px solid var(--border-soft);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--light-green);
+            background: rgba(143, 181, 105, 0.1);
+        }
+
+        .filter-btn.active {
+            background: var(--primary-green);
+            color: white;
+            border-color: var(--primary-green);
+        }
+
+        /* Product Grid */
+        .products-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-green);
+        }
+
+        .section-subtitle {
+            color: var(--text-medium);
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-section {
+            margin-bottom: 3rem;
+        }
+
+        .category-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            color: var(--primary-green);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--light-green);
+            display: inline-block;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px var(--shadow);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(45, 80, 22, 0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+        }
+
+        .product-info {
+            padding: 1.25rem;
+        }
+
+        .product-badges {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+        }
+
+        .badge {
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .badge.hot { background: #FFE5E5; color: #D32F2F; }
+        .badge.cold { background: #E3F2FD; color: #1976D2; }
+        .badge.vegan { background: #E8F5E9; color: #2E7D32; }
+        .badge.vegetarian { background: #FFF3E0; color: #E65100; }
+
+        .product-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .product-description {
+            font-size: 0.9rem;
+            color: var(--text-medium);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-green);
+        }
+
+        .stock-status {
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .stock-status.in-stock {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .stock-status.out-of-stock {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        /* Sidebar Detail Panel */
+        .detail-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .detail-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .detail-panel {
+            position: fixed;
+            right: -100%;
+            top: 0;
+            width: 100%;
+            max-width: 500px;
+            height: 100%;
+            background: white;
+            z-index: 1001;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .detail-panel.active {
+            right: 0;
+        }
+
+        .detail-header {
+            position: relative;
+        }
+
+        .detail-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            transform: scale(1.1);
+            background: var(--cream);
+        }
+
+        .detail-content {
+            padding: 2rem;
+        }
+
+        .detail-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-green);
+        }
+
+        .detail-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-section {
+            margin-bottom: 2rem;
+        }
+
+        .detail-section-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ingredients-list {
+            color: var(--text-medium);
+            line-height: 1.8;
+        }
+
+        .allergens-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .allergen-tag {
+            background: #FFF3E0;
+            color: #E65100;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .nutriscore {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .nutriscore.a { background: #038141; }
+        .nutriscore.b { background: #85BB2F; }
+        .nutriscore.c { background: #FECB02; color: #1A1A1A; }
+        .nutriscore.d { background: #EE8100; }
+        .nutriscore.e { background: #E63E11; }
+
+        .extras-section {
+            background: var(--cream);
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+
+        .extra-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .extra-item:last-child {
+            border-bottom: none;
+        }
+
+        .extra-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-green);
+            cursor: pointer;
+        }
+
+        .add-to-cart-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+        }
+
+        .add-to-cart-btn:hover {
+            background: var(--light-green);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(45, 80, 22, 0.3);
+        }
+
+        .add-to-cart-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 3rem 1.5rem 2rem;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+
+            .detail-panel {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="logo">🥗 Mon Frigo</h1>
+            <p class="tagline">Précommandez votre déjeuner en toute simplicité</p>
+            <div class="freshness-badge">Produits frais • Livraison instantanée depuis votre frigo connecté</div>
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="filters">
+        <div class="filter-container">
+            <button class="filter-toggle" onclick="toggleFilters()">
+                <span>🔍</span>
+                <span>Filtrer les plats</span>
+            </button>
+            
+            <div class="filter-panel" id="filterPanel">
+                <div class="filter-group">
+                    <label class="filter-label">Type de plat</label>
+                    <div class="filter-options">
+                        <button class="filter-btn" data-filter="type" data-value="all" onclick="applyFilter('type', 'all', this)">Tous</button>
+                        <button class="filter-btn" data-filter="type" data-value="hot" onclick="applyFilter('type', 'hot', this)">Plats chauds</button>
+                        <button class="filter-btn" data-filter="type" data-value="cold" onclick="applyFilter('type', 'cold', this)">Plats froids</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Catégorie</label>
+                    <div class="filter-options">
+                        <button class="filter-btn" data-filter="category" data-value="all" onclick="applyFilter('category', 'all', this)">Tous</button>
+                        <button class="filter-btn" data-filter="category" data-value="entree" onclick="applyFilter('category', 'entree', this)">Entrées</button>
+                        <button class="filter-btn" data-filter="category" data-value="plat" onclick="applyFilter('category', 'plat', this)">Plats</button>
+                        <button class="filter-btn" data-filter="category" data-value="dessert" onclick="applyFilter('category', 'dessert', this)">Desserts</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Régime alimentaire</label>
+                    <div class="filter-options">
+                        <button class="filter-btn" data-filter="diet" data-value="all" onclick="applyFilter('diet', 'all', this)">Tous</button>
+                        <button class="filter-btn" data-filter="diet" data-value="vegan" onclick="applyFilter('diet', 'vegan', this)">Vegan</button>
+                        <button class="filter-btn" data-filter="diet" data-value="vegetarian" onclick="applyFilter('diet', 'vegetarian', this)">Végétarien</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Nutri-Score</label>
+                    <div class="filter-options">
+                        <button class="filter-btn" data-filter="nutriscore" data-value="all" onclick="applyFilter('nutriscore', 'all', this)">Tous</button>
+                        <button class="filter-btn" data-filter="nutriscore" data-value="a" onclick="applyFilter('nutriscore', 'a', this)">A</button>
+                        <button class="filter-btn" data-filter="nutriscore" data-value="b" onclick="applyFilter('nutriscore', 'b', this)">B</button>
+                        <button class="filter-btn" data-filter="nutriscore" data-value="c" onclick="applyFilter('nutriscore', 'c', this)">C</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Prix</label>
+                    <div class="filter-options">
+                        <button class="filter-btn" data-filter="price" data-value="all" onclick="applyFilter('price', 'all', this)">Tous</button>
+                        <button class="filter-btn" data-filter="price" data-value="low" onclick="applyFilter('price', 'low', this)">Moins de 8€</button>
+                        <button class="filter-btn" data-filter="price" data-value="medium" onclick="applyFilter('price', 'medium', this)">8€ - 12€</button>
+                        <button class="filter-btn" data-filter="price" data-value="high" onclick="applyFilter('price', 'high', this)">Plus de 12€</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products-section">
+        <h2 class="section-title">Notre sélection du jour</h2>
+        <p class="section-subtitle">Des produits frais, préparés chaque matin par nos chefs</p>
+        
+        <div id="productGrid">
+            <!-- Catégories injectées par JavaScript -->
+        </div>
+    </section>
+
+    <!-- Detail Panel -->
+    <div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
+    <div class="detail-panel" id="detailPanel"></div>
+
+    <script>
+        // Sample product data
+        const products = [
+            // ENTRÉES
+            {
+                id: 13,
+                name: "Salade César",
+                description: "Laitue romaine, croûtons, parmesan, sauce César maison",
+                price: 6.50,
+                image: "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&h=300&fit=crop",
+                category: "entree",
+                type: "cold",
+                diet: "vegetarian",
+                weight: "200g",
+                nutriscore: "b",
+                stock: true,
+                ingredients: "Laitue romaine, croûtons (pain, huile d'olive), parmesan, sauce César (mayonnaise, anchois, ail, citron)",
+                allergens: ["Gluten", "Lait", "Œuf", "Poisson"],
+                calories: 280
+            },
+            {
+                id: 14,
+                name: "Gaspacho de Tomates",
+                description: "Soupe froide de tomates, poivrons, concombre",
+                price: 5.50,
+                image: "https://images.unsplash.com/photo-1621518183154-a2d3579cc42a?w=400&h=300&fit=crop",
+                category: "entree",
+                type: "cold",
+                diet: "vegan",
+                weight: "250ml",
+                nutriscore: "a",
+                stock: true,
+                ingredients: "Tomates, poivrons rouges, concombre, oignon, ail, huile d'olive, vinaigre, pain",
+                allergens: ["Gluten"],
+                calories: 120
+            },
+            {
+                id: 15,
+                name: "Velouté de Légumes",
+                description: "Soupe chaude de légumes de saison",
+                price: 5.90,
+                image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&h=300&fit=crop",
+                category: "entree",
+                type: "hot",
+                diet: "vegan",
+                weight: "300ml",
+                nutriscore: "a",
+                stock: true,
+                ingredients: "Carottes, poireaux, pommes de terre, oignons, bouillon de légumes, crème végétale",
+                allergens: [],
+                calories: 150
+            },
+            
+            // PLATS
+            {
+                id: 1,
+                name: "Bowl Buddha Quinoa",
+                description: "Quinoa, avocat, edamame, chou rouge, carottes râpées, sauce tahini",
+                price: 9.90,
+                image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop",
+                category: "plat",
+                type: "cold",
+                diet: "vegan",
+                weight: "350g",
+                nutriscore: "a",
+                stock: true,
+                ingredients: "Quinoa, avocat, edamame, chou rouge, carottes, graines de sésame, sauce tahini (tahini, citron, ail, huile d'olive)",
+                allergens: ["Sésame"],
+                calories: 420
+            },
+            {
+                id: 2,
+                name: "Lasagnes Bolognaise",
+                description: "Lasagnes maison, sauce bolognaise, béchamel, parmesan",
+                price: 11.50,
+                image: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=400&h=300&fit=crop",
+                category: "plat",
+                type: "hot",
+                diet: "none",
+                weight: "400g",
+                nutriscore: "c",
+                stock: true,
+                ingredients: "Pâtes fraîches, viande de bœuf, tomates, lait, farine, beurre, parmesan, oignons, carottes, céleri",
+                allergens: ["Gluten", "Lait", "Céleri"],
+                calories: 580
+            },
+            {
+                id: 3,
+                name: "Salade César Poulet",
+                description: "Laitue romaine, poulet rôti, croûtons, parmesan, sauce César",
+                price: 8.90,
+                image: "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&h=300&fit=crop",
+                category: "plat",
+                type: "cold",
+                diet: "none",
+                weight: "320g",
+                nutriscore: "b",
+                stock: true,
+                ingredients: "Laitue romaine, blanc de poulet, croûtons (pain, huile d'olive), parmesan, sauce César (mayonnaise, anchois, ail, citron)",
+                allergens: ["Gluten", "Lait", "Œuf", "Poisson"],
+                calories: 450
+            },
+            {
+                id: 4,
+                name: "Curry de Légumes",
+                description: "Légumes de saison au curry, lait de coco, riz basmati",
+                price: 10.20,
+                image: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400&h=300&fit=crop",
+                category: "plat",
+                type: "hot",
+                diet: "vegan",
+                weight: "380g",
+                nutriscore: "a",
+                stock: false,
+                ingredients: "Riz basmati, courgettes, aubergines, poivrons, oignons, lait de coco, curry, curcuma, gingembre, ail",
+                allergens: [],
+                calories: 390
+            },
+            {
+                id: 5,
+                name: "Poke Bowl Saumon",
+                description: "Saumon mariné, riz, avocat, concombre, edamame, graines de sésame",
+                price: 12.90,
+                image: "https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?w=400&h=300&fit=crop",
+                category: "plat",
+                type: "cold",
+                diet: "none",
+                weight: "370g",
+                nutriscore: "a",
+                stock: true,
+                ingredients: "Riz japonais, saumon frais, avocat, concombre, edamame, algues wakame, graines de sésame, sauce soja, gingembre mariné",
+                allergens: ["Poisson", "Soja", "Sésame"],
+                calories: 520
+            },
+            {
+                id: 6,
+                name: "Quiche Lorraine",
+                description: "Quiche maison aux lardons et fromage",
+                price: 7.50,
+                image: "https://images.unsplash.com/photo-1621503089016-dc065afe136f?w=400&h=300&fit=crop",
+                category: "plat",
+                type: "hot",
+                diet: "none",
+                weight: "250g",
+                nutriscore: "c",
+                stock: true,
+                ingredients: "Pâte brisée (farine, beurre, eau), œufs, crème fraîche, lardons, gruyère, muscade",
+                allergens: ["Gluten", "Œuf", "Lait"],
+                calories: 480
+            },
+            {
+                id: 7,
+                name: "Tiramisu Maison",
+                description: "Tiramisu traditionnel au mascarpone et café",
+                price: 4.50,
+                image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400&h=300&fit=crop",
+                category: "dessert",
+                type: "cold",
+                diet: "vegetarian",
+                weight: "150g",
+                nutriscore: "d",
+                stock: true,
+                ingredients: "Mascarpone, œufs, sucre, biscuits à la cuillère, café, cacao",
+                allergens: ["Lait", "Œuf", "Gluten"],
+                calories: 340
+            },
+            {
+                id: 8,
+                name: "Brownie Chocolat",
+                description: "Brownie au chocolat noir, noix de pécan",
+                price: 3.90,
+                image: "https://images.unsplash.com/photo-1607920591413-4ec007e70023?w=400&h=300&fit=crop",
+                category: "dessert",
+                type: "cold",
+                diet: "vegetarian",
+                weight: "120g",
+                nutriscore: "d",
+                stock: true,
+                ingredients: "Chocolat noir 70%, beurre, œufs, sucre, farine, noix de pécan",
+                allergens: ["Gluten", "Œuf", "Lait", "Fruits à coque"],
+                calories: 380
+            },
+            {
+                id: 9,
+                name: "Salade de Fruits Frais",
+                description: "Mélange de fruits de saison, menthe fraîche",
+                price: 4.20,
+                image: "https://images.unsplash.com/photo-1564093497595-593b96d80180?w=400&h=300&fit=crop",
+                category: "dessert",
+                type: "cold",
+                diet: "vegan",
+                weight: "200g",
+                nutriscore: "a",
+                stock: true,
+                ingredients: "Fraises, kiwi, mangue, ananas, myrtilles, menthe fraîche, jus de citron",
+                allergens: [],
+                calories: 95
+            },
+            {
+                id: 10,
+                name: "Wrap Végétarien",
+                description: "Tortilla, houmous, légumes grillés, feta",
+                price: 7.90,
+                image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=300&fit=crop",
+                category: "plat",
+                type: "cold",
+                diet: "vegetarian",
+                weight: "280g",
+                nutriscore: "b",
+                stock: true,
+                ingredients: "Tortilla de blé, houmous, courgettes grillées, poivrons grillés, aubergines grillées, feta, roquette",
+                allergens: ["Gluten", "Lait", "Sésame"],
+                calories: 410
+            },
+            {
+                id: 11,
+                name: "Mousse au Chocolat",
+                description: "Mousse au chocolat noir artisanale",
+                price: 3.50,
+                image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=300&fit=crop",
+                category: "dessert",
+                type: "cold",
+                diet: "vegetarian",
+                weight: "100g",
+                nutriscore: "d",
+                stock: false,
+                ingredients: "Chocolat noir 70%, œufs, sucre, crème fraîche",
+                allergens: ["Œuf", "Lait"],
+                calories: 280
+            },
+            {
+                id: 12,
+                name: "Risotto aux Champignons",
+                description: "Risotto crémeux, champignons de Paris, parmesan",
+                price: 10.90,
+                image: "https://images.unsplash.com/photo-1476124369491-f014df6b8b7e?w=400&h=300&fit=crop",
+                category: "plat",
+                type: "hot",
+                diet: "vegetarian",
+                weight: "350g",
+                nutriscore: "b",
+                stock: true,
+                ingredients: "Riz arborio, champignons de Paris, bouillon de légumes, vin blanc, parmesan, beurre, oignon, ail",
+                allergens: ["Lait"],
+                calories: 440
+            }
+        ];
+
+        let currentFilters = {
+            type: 'all',
+            category: 'all',
+            diet: 'all',
+            nutriscore: 'all',
+            price: 'all'
+        };
+
+        // Toggle filters panel
+        function toggleFilters() {
+            const panel = document.getElementById('filterPanel');
+            panel.classList.toggle('active');
+        }
+
+        // Apply filter
+        function applyFilter(filterType, value, button) {
+            currentFilters[filterType] = value;
+            
+            // Update button states
+            const buttons = document.querySelectorAll(`[data-filter="${filterType}"]`);
+            buttons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            renderProducts();
+        }
+
+        // Filter products
+        function filterProducts() {
+            return products.filter(product => {
+                // Type filter
+                if (currentFilters.type !== 'all' && product.type !== currentFilters.type) {
+                    return false;
+                }
+                
+                // Category filter
+                if (currentFilters.category !== 'all' && product.category !== currentFilters.category) {
+                    return false;
+                }
+                
+                // Diet filter
+                if (currentFilters.diet !== 'all' && product.diet !== currentFilters.diet) {
+                    return false;
+                }
+                
+                // Nutriscore filter
+                if (currentFilters.nutriscore !== 'all' && product.nutriscore !== currentFilters.nutriscore) {
+                    return false;
+                }
+                
+                // Price filter
+                if (currentFilters.price !== 'all') {
+                    if (currentFilters.price === 'low' && product.price >= 8) return false;
+                    if (currentFilters.price === 'medium' && (product.price < 8 || product.price > 12)) return false;
+                    if (currentFilters.price === 'high' && product.price <= 12) return false;
+                }
+                
+                return true;
+            });
+        }
+
+        // Render products
+        function renderProducts() {
+            const grid = document.getElementById('productGrid');
+            const filteredProducts = filterProducts();
+            
+            // Grouper les produits par catégorie
+            const categories = {
+                'entree': { name: 'Entrées', emoji: '🥗', products: [] },
+                'plat': { name: 'Plats', emoji: '🍽️', products: [] },
+                'dessert': { name: 'Desserts', emoji: '🍰', products: [] }
+            };
+            
+            // Organiser les produits par catégorie
+            filteredProducts.forEach(product => {
+                if (categories[product.category]) {
+                    categories[product.category].products.push(product);
+                }
+            });
+            
+            // Construire le HTML par catégorie
+            let html = '';
+            let productIndex = 0;
+            
+            Object.keys(categories).forEach(categoryKey => {
+                const category = categories[categoryKey];
+                
+                // Afficher la catégorie seulement si elle contient des produits
+                if (category.products.length > 0) {
+                    html += `
+                        <div class="category-section">
+                            <h3 class="category-title">${category.emoji} ${category.name}</h3>
+                            <div class="product-grid">
+                                ${category.products.map(product => {
+                                    const cardHtml = `
+                                        <div class="product-card" style="animation-delay: ${productIndex * 0.05}s" onclick="showDetail(${product.id})">
+                                            <img src="${product.image}" alt="${product.name}" class="product-image">
+                                            <div class="product-info">
+                                                <div class="product-badges">
+                                                    <span class="badge ${product.type}">${product.type === 'hot' ? 'Chaud' : 'Froid'}</span>
+                                                    ${product.diet === 'vegan' ? '<span class="badge vegan">Vegan</span>' : ''}
+                                                    ${product.diet === 'vegetarian' ? '<span class="badge vegetarian">Végé</span>' : ''}
+                                                </div>
+                                                <h3 class="product-name">${product.name}</h3>
+                                                <p class="product-description">${product.description}</p>
+                                                <div class="product-footer">
+                                                    <span class="product-price">${product.price.toFixed(2)}€</span>
+                                                    <span class="stock-status ${product.stock ? 'in-stock' : 'out-of-stock'}">
+                                                        ${product.stock ? 'En stock' : 'Rupture'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                    productIndex++;
+                                    return cardHtml;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            grid.innerHTML = html;
+        }
+
+        // Show product detail
+        function showDetail(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const panel = document.getElementById('detailPanel');
+            panel.innerHTML = `
+                <div class="detail-header">
+                    <img src="${product.image}" alt="${product.name}" class="detail-image">
+                    <button class="close-btn" onclick="closeDetail()">×</button>
+                </div>
+                <div class="detail-content">
+                    <div class="product-badges">
+                        <span class="badge ${product.type}">${product.type === 'hot' ? 'Plat Chaud' : 'Plat Froid'}</span>
+                        ${product.diet === 'vegan' ? '<span class="badge vegan">Vegan</span>' : ''}
+                        ${product.diet === 'vegetarian' ? '<span class="badge vegetarian">Végétarien</span>' : ''}
+                    </div>
+                    <h2 class="detail-title">${product.name}</h2>
+                    <div class="detail-price">${product.price.toFixed(2)}€</div>
+                    
+                    <div class="detail-section">
+                        <h3 class="detail-section-title">Description</h3>
+                        <p>${product.description}</p>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3 class="detail-section-title">Ingrédients</h3>
+                        <p class="ingredients-list">${product.ingredients}</p>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3 class="detail-section-title">Informations nutritionnelles</h3>
+                        <div style="display: flex; gap: 2rem; align-items: center; flex-wrap: wrap;">
+                            <div>
+                                <div class="nutriscore ${product.nutriscore}">${product.nutriscore.toUpperCase()}</div>
+                                <p style="font-size: 0.85rem; color: var(--text-medium); margin-top: 0.5rem;">Nutri-Score</p>
+                            </div>
+                            <div>
+                                <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary-green);">${product.weight}</p>
+                                <p style="font-size: 0.85rem; color: var(--text-medium);">Poids</p>
+                            </div>
+                            <div>
+                                <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary-green);">${product.calories} kcal</p>
+                                <p style="font-size: 0.85rem; color: var(--text-medium);">Calories</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${product.allergens.length > 0 ? `
+                    <div class="detail-section">
+                        <h3 class="detail-section-title">⚠️ Allergènes</h3>
+                        <div class="allergens-list">
+                            ${product.allergens.map(allergen => `<span class="allergen-tag">${allergen}</span>`).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="detail-section">
+                        <h3 class="detail-section-title">Suppléments</h3>
+                        <div class="extras-section">
+                            <div class="extra-item">
+                                <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                                    <input type="checkbox" class="extra-checkbox">
+                                    <span>Couverts (+0€)</span>
+                                </label>
+                            </div>
+                            <div class="extra-item">
+                                <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                                    <input type="checkbox" class="extra-checkbox">
+                                    <span>Pain (+0.50€)</span>
+                                </label>
+                            </div>
+                            <div class="extra-item">
+                                <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                                    <input type="checkbox" class="extra-checkbox">
+                                    <span>Sauce supplémentaire (+0.80€)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="add-to-cart-btn" ${!product.stock ? 'disabled' : ''}>
+                        ${product.stock ? 'Ajouter au panier' : 'Produit indisponible'}
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('detailOverlay').classList.add('active');
+            panel.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close detail panel
+        function closeDetail() {
+            document.getElementById('detailOverlay').classList.remove('active');
+            document.getElementById('detailPanel').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Initialize
+        renderProducts();
+    </script>
+</body>
+</html>

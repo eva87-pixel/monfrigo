@@ -212,6 +212,20 @@
             gap: 1.5rem;
         }
 
+        .category-section {
+            margin-bottom: 3rem;
+        }
+
+        .category-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            color: var(--primary-green);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--light-green);
+            display: inline-block;
+        }
+
         .product-card {
             background: white;
             border-radius: 16px;
@@ -563,6 +577,7 @@
                     <label class="filter-label">Catégorie</label>
                     <div class="filter-options">
                         <button class="filter-btn" data-filter="category" data-value="all" onclick="applyFilter('category', 'all', this)">Tous</button>
+                        <button class="filter-btn" data-filter="category" data-value="entree" onclick="applyFilter('category', 'entree', this)">Entrées</button>
                         <button class="filter-btn" data-filter="category" data-value="plat" onclick="applyFilter('category', 'plat', this)">Plats</button>
                         <button class="filter-btn" data-filter="category" data-value="dessert" onclick="applyFilter('category', 'dessert', this)">Desserts</button>
                     </div>
@@ -605,7 +620,9 @@
         <h2 class="section-title">Notre sélection du jour</h2>
         <p class="section-subtitle">Des produits frais, préparés chaque matin par nos chefs</p>
         
-        <div class="product-grid" id="productGrid"></div>
+        <div id="productGrid">
+            <!-- Catégories injectées par JavaScript -->
+        </div>
     </section>
 
     <!-- Detail Panel -->
@@ -615,6 +632,57 @@
     <script>
         // Sample product data
         const products = [
+            // ENTRÉES
+            {
+                id: 13,
+                name: "Salade César",
+                description: "Laitue romaine, croûtons, parmesan, sauce César maison",
+                price: 6.50,
+                image: "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&h=300&fit=crop",
+                category: "entree",
+                type: "cold",
+                diet: "vegetarian",
+                weight: "200g",
+                nutriscore: "b",
+                stock: true,
+                ingredients: "Laitue romaine, croûtons (pain, huile d'olive), parmesan, sauce César (mayonnaise, anchois, ail, citron)",
+                allergens: ["Gluten", "Lait", "Œuf", "Poisson"],
+                calories: 280
+            },
+            {
+                id: 14,
+                name: "Gaspacho de Tomates",
+                description: "Soupe froide de tomates, poivrons, concombre",
+                price: 5.50,
+                image: "https://images.unsplash.com/photo-1621518183154-a2d3579cc42a?w=400&h=300&fit=crop",
+                category: "entree",
+                type: "cold",
+                diet: "vegan",
+                weight: "250ml",
+                nutriscore: "a",
+                stock: true,
+                ingredients: "Tomates, poivrons rouges, concombre, oignon, ail, huile d'olive, vinaigre, pain",
+                allergens: ["Gluten"],
+                calories: 120
+            },
+            {
+                id: 15,
+                name: "Velouté de Légumes",
+                description: "Soupe chaude de légumes de saison",
+                price: 5.90,
+                image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&h=300&fit=crop",
+                category: "entree",
+                type: "hot",
+                diet: "vegan",
+                weight: "300ml",
+                nutriscore: "a",
+                stock: true,
+                ingredients: "Carottes, poireaux, pommes de terre, oignons, bouillon de légumes, crème végétale",
+                allergens: [],
+                calories: 150
+            },
+            
+            // PLATS
             {
                 id: 1,
                 name: "Bowl Buddha Quinoa",
@@ -874,26 +942,64 @@
             const grid = document.getElementById('productGrid');
             const filteredProducts = filterProducts();
             
-            grid.innerHTML = filteredProducts.map((product, index) => `
-                <div class="product-card" style="animation-delay: ${index * 0.05}s" onclick="showDetail(${product.id})">
-                    <img src="${product.image}" alt="${product.name}" class="product-image">
-                    <div class="product-info">
-                        <div class="product-badges">
-                            <span class="badge ${product.type}">${product.type === 'hot' ? 'Chaud' : 'Froid'}</span>
-                            ${product.diet === 'vegan' ? '<span class="badge vegan">Vegan</span>' : ''}
-                            ${product.diet === 'vegetarian' ? '<span class="badge vegetarian">Végé</span>' : ''}
+            // Grouper les produits par catégorie
+            const categories = {
+                'entree': { name: 'Entrées', emoji: '🥗', products: [] },
+                'plat': { name: 'Plats', emoji: '🍽️', products: [] },
+                'dessert': { name: 'Desserts', emoji: '🍰', products: [] }
+            };
+            
+            // Organiser les produits par catégorie
+            filteredProducts.forEach(product => {
+                if (categories[product.category]) {
+                    categories[product.category].products.push(product);
+                }
+            });
+            
+            // Construire le HTML par catégorie
+            let html = '';
+            let productIndex = 0;
+            
+            Object.keys(categories).forEach(categoryKey => {
+                const category = categories[categoryKey];
+                
+                // Afficher la catégorie seulement si elle contient des produits
+                if (category.products.length > 0) {
+                    html += `
+                        <div class="category-section">
+                            <h3 class="category-title">${category.emoji} ${category.name}</h3>
+                            <div class="product-grid">
+                                ${category.products.map(product => {
+                                    const cardHtml = `
+                                        <div class="product-card" style="animation-delay: ${productIndex * 0.05}s" onclick="showDetail(${product.id})">
+                                            <img src="${product.image}" alt="${product.name}" class="product-image">
+                                            <div class="product-info">
+                                                <div class="product-badges">
+                                                    <span class="badge ${product.type}">${product.type === 'hot' ? 'Chaud' : 'Froid'}</span>
+                                                    ${product.diet === 'vegan' ? '<span class="badge vegan">Vegan</span>' : ''}
+                                                    ${product.diet === 'vegetarian' ? '<span class="badge vegetarian">Végé</span>' : ''}
+                                                </div>
+                                                <h3 class="product-name">${product.name}</h3>
+                                                <p class="product-description">${product.description}</p>
+                                                <div class="product-footer">
+                                                    <span class="product-price">${product.price.toFixed(2)}€</span>
+                                                    <span class="stock-status ${product.stock ? 'in-stock' : 'out-of-stock'}">
+                                                        ${product.stock ? 'En stock' : 'Rupture'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                    productIndex++;
+                                    return cardHtml;
+                                }).join('')}
+                            </div>
                         </div>
-                        <h3 class="product-name">${product.name}</h3>
-                        <p class="product-description">${product.description}</p>
-                        <div class="product-footer">
-                            <span class="product-price">${product.price.toFixed(2)}€</span>
-                            <span class="stock-status ${product.stock ? 'in-stock' : 'out-of-stock'}">
-                                ${product.stock ? 'En stock' : 'Rupture'}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+                    `;
+                }
+            });
+            
+            grid.innerHTML = html;
         }
 
         // Show product detail
